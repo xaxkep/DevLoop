@@ -12,7 +12,8 @@ export async function onRequest(context) {
         const getResponse = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues/${id}`, {
             headers: {
                 'Authorization': `token ${env.GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json'
+                'Accept': 'application/vnd.github.v3+json',
+                'User-Agent': 'DevLoop-App'
             }
         });
         const issue = await getResponse.json();
@@ -27,7 +28,8 @@ export async function onRequest(context) {
             headers: {
                 'Authorization': `token ${env.GITHUB_TOKEN}`,
                 'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'User-Agent': 'DevLoop-App'
             },
             body: JSON.stringify({ labels })
         });
@@ -42,7 +44,8 @@ export async function onRequest(context) {
             headers: {
                 'Authorization': `token ${env.GITHUB_TOKEN}`,
                 'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'User-Agent': 'DevLoop-App'
             },
             body: JSON.stringify({ state: 'closed' })
         });

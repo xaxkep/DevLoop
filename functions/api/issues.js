@@ -13,7 +13,8 @@ export async function onRequest(context) {
             const response = await fetch('https://api.github.com/repos/xaxkep/DevLoop/issues', {
                 headers: {
                     'Authorization': `token ${env.GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json'
+                    'Accept': 'application/vnd.github.v3+json',
+                    'User-Agent': 'DevLoop-App'
                 }
             });
             if (!response.ok) {
@@ -36,7 +37,8 @@ export async function onRequest(context) {
                 headers: {
                     'Authorization': `token ${env.GITHUB_TOKEN}`,
                     'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'DevLoop-App'
                 },
                 body: JSON.stringify(body)
             });
