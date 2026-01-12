@@ -18,9 +18,17 @@ export async function onRequest(context) {
         });
         const issue = await getResponse.json();
 
-        // Filter out old labels and add new
-        const labels = issue.labels.map(l => l.name).filter(l => !['high', 'medium', 'low', 'easy', 'medium', 'hard'].includes(l));
-        labels.push(value.toLowerCase());
+        // Filter out old labels of the same type and add new
+        let filterLabels = [];
+        if (field === 'feasibility') {
+            filterLabels = ['high', 'medium', 'low'];
+        } else if (field === 'effort') {
+            filterLabels = ['easy', 'medium', 'hard'];
+        }
+        const labels = issue.labels.map(l => l.name).filter(l => !filterLabels.includes(l));
+        if (value !== 'Unassessed') {
+            labels.push(value.toLowerCase());
+        }
 
         // Update issue
         const response = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues/${id}`, {
