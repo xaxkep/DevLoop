@@ -1255,16 +1255,16 @@ ${attachmentSection}
 </script>
 
 <!-- Image Modal -->
-<div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" id="image-modal">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden transform transition-all flex flex-col max-h-[90vh] scale-95 opacity-0" id="image-modal-content">
+<div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" id="image-modal">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[95vh] overflow-hidden transform transition-all flex flex-col scale-95 opacity-0" id="image-modal-content">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 flex-none">
             <h3 class="text-lg font-semibold text-gray-900">Screenshot</h3>
-            <button class="text-gray-400 hover:text-gray-600" onclick="closeModal('image-modal')">
+            <button class="text-gray-400 hover:text-gray-600 text-2xl" onclick="closeModal('image-modal')">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-        <div class="p-6 flex-1 flex items-center justify-center">
-            <img id="image-modal-img" src="" alt="Screenshot" class="max-w-full max-h-full object-contain">
+        <div class="p-6 flex-1 overflow-auto flex items-start justify-center">
+            <img id="image-modal-img" src="" alt="Screenshot" class="max-w-full object-contain">
         </div>
     </div>
 </div>
