@@ -616,6 +616,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 type: 'Bug',
                 title: 'Mobile Navigation Menu Clip',
                 description: 'The navigation menu clips through the hero image on iPhone 12 Pro Max in landscape orientation. It makes the "Pricing" link unclickable.',
+                status: 'Not Started',
                 feasibility: 'High',
                 effort: 'Easy',
                 created: '2023-10-24',
@@ -630,6 +631,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 type: 'Feature',
                 title: 'Social Login Integration',
                 description: 'Users want to sign up faster. We need to implement OAuth2 for Google and GitHub. Documentation is ready, just need backend endpoints.',
+                status: 'Not Started',
                 feasibility: 'High',
                 effort: 'Medium',
                 created: '2023-10-25',
@@ -666,6 +668,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         const feasibility = feasibilityLabel ? feasibilityLabel.name.charAt(0).toUpperCase() + feasibilityLabel.name.slice(1) : 'Unassessed';
         const effortLabel = issue.labels.find(l => ['easy', 'medium', 'hard'].includes(l.name));
         const effort = effortLabel ? effortLabel.name.charAt(0).toUpperCase() + effortLabel.name.slice(1) : 'Unassessed';
+        const statusLabel = issue.labels.find(l => l.name.startsWith('status:'));
+        const status = statusLabel ? statusLabel.name.split(':')[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Not Started';
         const description = body.split('\n\n')[0];
         return {
             id: issue.number,
@@ -676,6 +680,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             screenshot: screenshotMatch ? screenshotMatch[1] : '',
             feasibility: feasibility,
             effort: effort,
+            status: status,
             selected: false,
             createdAt: createdAtMatch ? createdAtMatch[1] : issue.created_at,
             createdBy: nameMatch ? nameMatch[1] : issue.user.login,
@@ -866,24 +871,35 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             <div class="mt-auto pt-4">
                 <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
                     <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Triage Assessment</div>
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <label class="block text-xs text-gray-500 mb-1">Feasibility</label>
-                            <select onchange="updateItem(${item.id}, 'feasibility', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
-                                <option value="Unassessed" ${item.feasibility === 'Unassessed' ? 'selected' : ''}>Unassessed</option>
-                                <option value="High" ${item.feasibility === 'High' ? 'selected' : ''} class="text-green-600">High</option>
-                                <option value="Medium" ${item.feasibility === 'Medium' ? 'selected' : ''} class="text-yellow-600">Medium</option>
-                                <option value="Low" ${item.feasibility === 'Low' ? 'selected' : ''} class="text-red-600">Low</option>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">Status</label>
+                            <select onchange="updateItem(${item.id}, 'status', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
+                                <option value="Not Started" ${item.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
+                                <option value="Under Consideration" ${item.status === 'Under Consideration' ? 'selected' : ''} class="text-blue-600">Under Consideration</option>
+                                <option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''} class="text-yellow-600">In Progress</option>
+                                <option value="Done" ${item.status === 'Done' ? 'selected' : ''} class="text-green-600">Done</option>
                             </select>
                         </div>
-                        <div class="flex-1">
-                            <label class="block text-xs text-gray-500 mb-1">Effort</label>
-                            <select onchange="updateItem(${item.id}, 'effort', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
-                                <option value="Unassessed" ${item.effort === 'Unassessed' ? 'selected' : ''}>Unassessed</option>
-                                <option value="Easy" ${item.effort === 'Easy' ? 'selected' : ''} class="text-green-600">Easy</option>
-                                <option value="Medium" ${item.effort === 'Medium' ? 'selected' : ''} class="text-yellow-600">Medium</option>
-                                <option value="Hard" ${item.effort === 'Hard' ? 'selected' : ''} class="text-red-600">Hard</option>
-                            </select>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs text-gray-500 mb-1">Feasibility</label>
+                                <select onchange="updateItem(${item.id}, 'feasibility', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
+                                    <option value="Unassessed" ${item.feasibility === 'Unassessed' ? 'selected' : ''}>Unassessed</option>
+                                    <option value="High" ${item.feasibility === 'High' ? 'selected' : ''} class="text-green-600">High</option>
+                                    <option value="Medium" ${item.feasibility === 'Medium' ? 'selected' : ''} class="text-yellow-600">Medium</option>
+                                    <option value="Low" ${item.feasibility === 'Low' ? 'selected' : ''} class="text-red-600">Low</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs text-gray-500 mb-1">Effort</label>
+                                <select onchange="updateItem(${item.id}, 'effort', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
+                                    <option value="Unassessed" ${item.effort === 'Unassessed' ? 'selected' : ''}>Unassessed</option>
+                                    <option value="Easy" ${item.effort === 'Easy' ? 'selected' : ''} class="text-green-600">Easy</option>
+                                    <option value="Medium" ${item.effort === 'Medium' ? 'selected' : ''} class="text-yellow-600">Medium</option>
+                                    <option value="Hard" ${item.effort === 'Hard' ? 'selected' : ''} class="text-red-600">Hard</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -919,7 +935,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
     async function updateItem(id, field, value) {
         const item = items.find(i => i.id === id);
         if (item) {
-            if (field === 'feasibility' || field === 'effort') {
+            if (field === 'status' || field === 'feasibility' || field === 'effort') {
                 if (currentUser !== 'admin') {
                     openModal('login-modal');
                     // Revert the select to original value
@@ -1052,6 +1068,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 type: type,
                 title: title,
                 description: desc || 'No description provided.',
+                status: 'Not Started',
                 feasibility: 'Unassessed',
                 effort: 'Unassessed',
                 createdAt: createdAt,
@@ -1224,7 +1241,7 @@ assignees: ''
 
 # [${item.type.toUpperCase()}] ${item.title}
 
-**Status:** Triage
+**Status:** ${item.status}
 **Feasibility:** ${item.feasibility}
 **Effort Required:** ${item.effort}
 

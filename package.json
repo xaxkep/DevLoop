@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "mkdir -p dist && npx postcss src/input.css -o dist/output.css && cp nexus_core_v2.html dist/index.html",
+    "build": "if not exist dist mkdir dist && npx postcss src/input.css -o dist/output.css && copy nexus_core_v2.html dist\\index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
