@@ -390,6 +390,28 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                     <option value="Unassessed">Unassessed</option>
                 </select>
             </div>
+            <!-- Status Filter -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <div class="space-y-2">
+                    <label class="flex items-center cursor-pointer">
+                        <input checked="" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="Not Started">
+                        <span class="ml-2 text-sm text-gray-600">Not Started</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input checked="" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="Under Consideration">
+                        <span class="ml-2 text-sm text-gray-600">Under Consideration</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input checked="" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="In Progress">
+                        <span class="ml-2 text-sm text-gray-600">In Progress</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input checked="" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="Done">
+                        <span class="ml-2 text-sm text-gray-600">Done</span>
+                    </label>
+                </div>
+            </div>
         </div>
         
 
@@ -812,6 +834,7 @@ Please format it as a complete GitHub issue template with sections like Descript
         const typeFilters = Array.from(document.querySelectorAll('.filter-type:checked')).map(cb => cb.value);
         const feasFilter = document.getElementById('filter-feasibility').value;
         const effortFilter = document.getElementById('filter-effort').value;
+        const statusFilters = Array.from(document.querySelectorAll('.filter-status:checked')).map(cb => cb.value);
 
         container.innerHTML = '';
         
@@ -819,7 +842,8 @@ Please format it as a complete GitHub issue template with sections like Descript
             const typeMatch = typeFilters.includes(item.type);
             const feasMatch = feasFilter === 'All' || item.feasibility === feasFilter;
             const effortMatch = effortFilter === 'All' || item.effort === effortFilter;
-            return typeMatch && feasMatch && effortMatch;
+            const statusMatch = statusFilters.includes(item.status);
+            return typeMatch && feasMatch && effortMatch && statusMatch;
         });
 
         if (filteredItems.length === 0) {
@@ -1126,6 +1150,7 @@ Please format it as a complete GitHub issue template with sections like Descript
         document.querySelectorAll('.filter-type').forEach(cb => cb.checked = true);
         document.getElementById('filter-feasibility').value = 'All';
         document.getElementById('filter-effort').value = 'All';
+        document.querySelectorAll('.filter-status').forEach(cb => cb.checked = true);
         renderItems();
     }
 
