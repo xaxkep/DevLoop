@@ -407,7 +407,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                         <span class="ml-2 text-sm text-gray-600">In Progress</span>
                     </label>
                     <label class="flex items-center cursor-pointer">
-                        <input checked="" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="Done">
+                        <input class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="Done">
                         <span class="ml-2 text-sm text-gray-600">Done</span>
                     </label>
                 </div>
@@ -1150,7 +1150,9 @@ Please format it as a complete GitHub issue template with sections like Descript
         document.querySelectorAll('.filter-type').forEach(cb => cb.checked = true);
         document.getElementById('filter-feasibility').value = 'All';
         document.getElementById('filter-effort').value = 'All';
-        document.querySelectorAll('.filter-status').forEach(cb => cb.checked = true);
+        document.querySelectorAll('.filter-status').forEach(cb => {
+            cb.checked = cb.value !== 'Done';
+        });
         renderItems();
     }
 
