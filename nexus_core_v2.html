@@ -708,19 +708,30 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         });
     }
 
-    function login() {
+    async function login() {
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
-        if (username === 'admin' && password === 'HiMandy!') {
-            sessionStorage.setItem('loggedInUser', username);
-            currentUser = username;
-            closeModal('login-modal');
-            updateAuthUI();
-            // Reset inputs
-            document.getElementById('login-username').value = '';
-            document.getElementById('login-password').value = '';
-        } else {
-            alert('Invalid credentials');
+        try {
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const result = await response.json();
+            if (result.success) {
+                sessionStorage.setItem('loggedInUser', username);
+                currentUser = username;
+                closeModal('login-modal');
+                updateAuthUI();
+                // Reset inputs
+                document.getElementById('login-username').value = '';
+                document.getElementById('login-password').value = '';
+            } else {
+                alert('Invalid credentials');
+            }
+        } catch (e) {
+            alert('Login failed, please try again');
+            console.error(e);
         }
     }
 
