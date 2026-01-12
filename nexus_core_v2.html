@@ -830,7 +830,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             attachmentsHTML = `<div class="flex gap-2 mt-3 mb-1">`;
             if(item.url) attachmentsHTML += `<a href="${item.url}" target="_blank" class="flex items-center gap-1 text-xs text-indigo-600 hover:underline bg-indigo-50 px-2 py-1 rounded"><span class="material-symbols-outlined text-[14px]">link</span>Link</a>`;
             if(item.screenshot) {
-                attachmentsHTML += `<img src="${item.screenshot}" alt="Screenshot" class="mt-2 max-w-full h-auto border rounded" style="max-height: 200px;">`;
+                attachmentsHTML += `<img src="${item.screenshot}" alt="Screenshot" class="mt-2 max-w-full h-auto border rounded cursor-pointer" style="max-height: 200px;" onclick="openImageModal('${item.screenshot}')">`;
             }
             attachmentsHTML += `</div>`;
         }
@@ -1247,9 +1247,29 @@ ${attachmentSection}
         });
     }
 
+    function openImageModal(src) {
+        document.getElementById('image-modal-img').src = src;
+        openModal('image-modal');
+    }
+
 </script>
 
-<!-- 
+<!-- Image Modal -->
+<div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" id="image-modal">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden transform transition-all flex flex-col max-h-[90vh] scale-95 opacity-0" id="image-modal-content">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 flex-none">
+            <h3 class="text-lg font-semibold text-gray-900">Screenshot</h3>
+            <button class="text-gray-400 hover:text-gray-600" onclick="closeModal('image-modal')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-6 flex-1 flex items-center justify-center">
+            <img id="image-modal-img" src="" alt="Screenshot" class="max-w-full max-h-full object-contain">
+        </div>
+    </div>
+</div>
+
+<!--
     Image Sources:
     "/gen?prompt=collaborative+software+team+planning+on+glass+board+modern+office+blue+tones&aspect=16:9"
 -->
