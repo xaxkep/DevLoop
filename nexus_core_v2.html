@@ -941,7 +941,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
 
     async function updateIssueLabels(number, field, value) {
         try {
-            await fetch(`/api/issues/${number}/labels`, {
+            await fetch(`/api/issues/${number}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
