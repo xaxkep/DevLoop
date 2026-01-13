@@ -2,6 +2,9 @@ export async function onRequest(context) {
     const { request, env } = context;
     const method = request.method;
 
+    // Get authenticated user email from Cloudflare Access header
+    const userEmail = request.headers.get('Cf-Access-Authenticated-User-Email') || 'dev-mode@localhost';
+
     // Debug: Check if token is set
     if (!env.GITHUB_TOKEN) {
         return new Response('GITHUB_TOKEN not set', { status: 500 });
@@ -30,7 +33,11 @@ export async function onRequest(context) {
         }
     } else if (method === 'POST') {
         // Create new issue
-        const body = await request.json();
+        const requestBody = await request.json();
+        // Append user email to the issue body
+        let issueBody = requestBody.body;
+        issueBody += `\n\n---\n*Reported by: ${userEmail}*`;
+        const body = { ...requestBody, body: issueBody };
         try {
             const response = await fetch('https://api.github.com/repos/xaxkep/DevLoop/issues', {
                 method: 'POST',
