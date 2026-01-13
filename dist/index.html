@@ -390,6 +390,28 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                     <option value="Unassessed">Unassessed</option>
                 </select>
             </div>
+            <!-- Status Filter -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <div class="space-y-2">
+                    <label class="flex items-center cursor-pointer">
+                        <input checked="" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="Not Started">
+                        <span class="ml-2 text-sm text-gray-600">Not Started</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input checked="" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="Under Consideration">
+                        <span class="ml-2 text-sm text-gray-600">Under Consideration</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input checked="" class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="In Progress">
+                        <span class="ml-2 text-sm text-gray-600">In Progress</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input class="form-checkbox h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 filter-status" onchange="applyFilters()" type="checkbox" value="Done">
+                        <span class="ml-2 text-sm text-gray-600">Done</span>
+                    </label>
+                </div>
+            </div>
         </div>
         
 
@@ -446,7 +468,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         </div>
         <button class="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 py-2.5 rounded-lg shadow-md transition-all" onclick="generateMarkdownBatch()">
             <span class="material-symbols-outlined text-[20px] js-replaced-missing-icon">radio_button_unchecked</span>
-            <span>Generate GitHub Issues</span>
+            <span>Generate AI Prompt</span>
         </button>
     </div>
 </div>
@@ -519,8 +541,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                             <span class="material-symbols-outlined text-[16px] text-gray-400">image</span>
                             Screenshot
                         </label>
-                        <input class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" id="new-screenshot" type="file" accept="image/*">
-                        <p class="text-xs text-gray-500 mt-1">Select an image file to include in the report.</p>
+                        <input class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" id="new-screenshot" type="file" accept="image/*" multiple>
+                        <p class="text-xs text-gray-500 mt-1">Select one or more image files to include in the report.</p>
                     </div>
                 </div>
             </div>
@@ -541,7 +563,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-900 text-white flex-none">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-yellow-400 js-replaced-missing-icon">radio_button_unchecked</span>
-                <h3 class="text-lg font-semibold">Generated GitHub Issues</h3>
+                <h3 class="text-lg font-semibold">AI Prompt for GitHub Issues</h3>
             </div>
             <button class="text-gray-400 hover:text-white" onclick="closeModal('export-modal')">
                 <span class="material-symbols-outlined">close</span>
@@ -559,11 +581,21 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
                         <p class="text-indigo-600 font-medium animate-pulse">AI is formatting your request...</p>
                     </div>
-                    <div class="markdown-preview max-w-3xl mx-auto" id="markdown-display">---<br>name: Bug Report<br>about: Mobile Navigation Menu Clip<br>labels: bug, good first issue, priority: high<br>assignees: ''<br>---<br><br><h1>[BUG] Mobile Navigation Menu Clip</h1><br><br><strong>Status:</strong> Triage<br><strong>Feasibility:</strong> High<br><strong>Effort Required:</strong> Easy<br><br><h2>Description</h2><br>The navigation menu clips through the hero image on iPhone 12 Pro Max in landscape orientation. It makes the "Pricing" link unclickable.<br><br><h2>AI Analysis</h2><br>*Generated by DevLoop AI Triage Assistant*<br>- <strong>Recommendation:</strong> Proceed with implementation.<br>- <strong>Estimated Complexity:</strong> Easy<br><br><h2>Acceptance Criteria</h2><br>- [ ] Requirements met<br>- [ ] Tests passed</div>
+                    <pre class="whitespace-pre-wrap max-w-3xl mx-auto font-mono text-sm" id="markdown-display">Create a GitHub issue in markdown format for the following item:
+
+Title: Mobile Navigation Menu Clip
+Type: Bug
+Description: The navigation menu clips through the hero image on iPhone 12 Pro Max in landscape orientation. It makes the "Pricing" link unclickable.
+Status: Not Started
+Feasibility: High
+Effort Required: Easy
+Labels: bug, good first issue, priority: high
+
+Please format it as a complete GitHub issue template with sections like Description, Acceptance Criteria, etc. Make it ready to paste into GitHub.</pre>
                 </div>
                 
                 <div class="p-4 border-t border-gray-200 bg-gray-50 flex justify-between items-center flex-none">
-                    <span class="text-xs text-gray-500" id="preview-status">Raw Markdown</span>
+                    <span class="text-xs text-gray-500" id="preview-status">AI Prompt</span>
                     <button class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-700 hover:bg-gray-50 font-medium transition-colors" onclick="copyCurrentMarkdown()">
                         <span class="material-symbols-outlined text-sm">content_copy</span>
                         Copy to Clipboard
@@ -616,11 +648,12 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 type: 'Bug',
                 title: 'Mobile Navigation Menu Clip',
                 description: 'The navigation menu clips through the hero image on iPhone 12 Pro Max in landscape orientation. It makes the "Pricing" link unclickable.',
+                status: 'Not Started',
                 feasibility: 'High',
                 effort: 'Easy',
                 created: '2023-10-24',
                 url: '',
-                screenshot: '',
+                screenshots: [],
                 selected: false,
                 createdBy: 'admin',
                 email: ''
@@ -630,11 +663,12 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 type: 'Feature',
                 title: 'Social Login Integration',
                 description: 'Users want to sign up faster. We need to implement OAuth2 for Google and GitHub. Documentation is ready, just need backend endpoints.',
+                status: 'Not Started',
                 feasibility: 'High',
                 effort: 'Medium',
                 created: '2023-10-25',
                 url: 'https://oauth.net/2/',
-                screenshot: '',
+                screenshots: [],
                 selected: false,
                 createdBy: 'admin',
                 email: ''
@@ -644,9 +678,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
 
     async function loadItems() {
         try {
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/issues`, {
-                headers: { Authorization: `token ${githubToken}` }
-            });
+            const response = await fetch('/api/issues');
             const issues = await response.json();
             items = issues.filter(issue => issue.state === 'open').map(parseIssueToItem);
         } catch (e) {
@@ -658,7 +690,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
     function parseIssueToItem(issue) {
         const body = issue.body || '';
         const urlMatch = body.match(/URL:\s*(.+)/);
-        const screenshotMatch = body.match(/Screenshot:\s*(.+)/);
+        const screenshotMatch = body.match(/Screenshots:\s*([\s\S]*?)(?=\n\n|$)/);
+        const screenshots = screenshotMatch ? screenshotMatch[1].split('\n').map(s => s.trim()).filter(s => s) : [];
         const nameMatch = body.match(/Name:\s*(.+)/);
         const emailMatch = body.match(/Email:\s*(.+)/);
         const createdAtMatch = body.match(/Created At:\s*(.+)/);
@@ -668,6 +701,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         const feasibility = feasibilityLabel ? feasibilityLabel.name.charAt(0).toUpperCase() + feasibilityLabel.name.slice(1) : 'Unassessed';
         const effortLabel = issue.labels.find(l => ['easy', 'medium', 'hard'].includes(l.name));
         const effort = effortLabel ? effortLabel.name.charAt(0).toUpperCase() + effortLabel.name.slice(1) : 'Unassessed';
+        const statusLabel = issue.labels.find(l => l.name.startsWith('status:'));
+        const status = statusLabel ? statusLabel.name.split(':')[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Not Started';
         const description = body.split('\n\n')[0];
         return {
             id: issue.number,
@@ -675,9 +710,10 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             title: issue.title,
             description: description,
             url: urlMatch ? urlMatch[1] : '',
-            screenshot: screenshotMatch ? screenshotMatch[1] : '',
+            screenshots: screenshots,
             feasibility: feasibility,
             effort: effort,
+            status: status,
             selected: false,
             createdAt: createdAtMatch ? createdAtMatch[1] : issue.created_at,
             createdBy: nameMatch ? nameMatch[1] : issue.user.login,
@@ -691,8 +727,6 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
     // --- GitHub Config ---
     const GITHUB_REPO_OWNER = 'xaxkep';
     const GITHUB_REPO_NAME = 'DevLoop';
-    const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN_HERE'; // TODO: Replace with actual PAT
-    let githubToken = GITHUB_TOKEN;
 
     // --- Auth ---
     let currentUser = null;
@@ -707,19 +741,30 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         });
     }
 
-    function login() {
+    async function login() {
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
-        if (username === 'admin' && password === 'HiMandy!') {
-            sessionStorage.setItem('loggedInUser', username);
-            currentUser = username;
-            closeModal('login-modal');
-            updateAuthUI();
-            // Reset inputs
-            document.getElementById('login-username').value = '';
-            document.getElementById('login-password').value = '';
-        } else {
-            alert('Invalid credentials');
+        try {
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const result = await response.json();
+            if (result.success) {
+                sessionStorage.setItem('loggedInUser', username);
+                currentUser = username;
+                closeModal('login-modal');
+                updateAuthUI();
+                // Reset inputs
+                document.getElementById('login-username').value = '';
+                document.getElementById('login-password').value = '';
+            } else {
+                alert('Invalid credentials');
+            }
+        } catch (e) {
+            alert('Login failed, please try again');
+            console.error(e);
         }
     }
 
@@ -757,19 +802,19 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             reader.onload = async () => {
                 const base64 = reader.result.split(',')[1];
                 try {
-                    const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/images/${filename}`, {
-                        method: 'PUT',
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
                         headers: {
-                            Authorization: `token ${githubToken}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            message: 'Upload screenshot',
+                            filename: filename,
                             content: base64
                         })
                     });
                     if (!response.ok) throw new Error('Upload failed');
-                    resolve(`https://raw.githubusercontent.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/main/images/${filename}`);
+                    const result = await response.json();
+                    resolve(result.url);
                 } catch (e) {
                     reject(e);
                 }
@@ -779,7 +824,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
     }
 
     function handleFileSelect(event) {
-        window.selectedFile = event.target.files[0] || null;
+        window.selectedFiles = Array.from(event.target.files) || [];
     }
 
     // --- Item Management ---
@@ -790,6 +835,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         const typeFilters = Array.from(document.querySelectorAll('.filter-type:checked')).map(cb => cb.value);
         const feasFilter = document.getElementById('filter-feasibility').value;
         const effortFilter = document.getElementById('filter-effort').value;
+        const statusFilters = Array.from(document.querySelectorAll('.filter-status:checked')).map(cb => cb.value);
 
         container.innerHTML = '';
         
@@ -797,7 +843,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             const typeMatch = typeFilters.includes(item.type);
             const feasMatch = feasFilter === 'All' || item.feasibility === feasFilter;
             const effortMatch = effortFilter === 'All' || item.effort === effortFilter;
-            return typeMatch && feasMatch && effortMatch;
+            const statusMatch = statusFilters.includes(item.status);
+            return typeMatch && feasMatch && effortMatch && statusMatch;
         });
 
         if (filteredItems.length === 0) {
@@ -830,11 +877,13 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
 
         // Attachments indicators
         let attachmentsHTML = '';
-        if(item.url || item.screenshot) {
-            attachmentsHTML = `<div class="flex gap-2 mt-3 mb-1">`;
+        if(item.url || (item.screenshots && item.screenshots.length > 0)) {
+            attachmentsHTML = `<div class="flex gap-2 mt-3 mb-1 flex-wrap">`;
             if(item.url) attachmentsHTML += `<a href="${item.url}" target="_blank" class="flex items-center gap-1 text-xs text-indigo-600 hover:underline bg-indigo-50 px-2 py-1 rounded"><span class="material-symbols-outlined text-[14px]">link</span>Link</a>`;
-            if(item.screenshot) {
-                attachmentsHTML += `<img src="${item.screenshot}" alt="Screenshot" class="mt-2 max-w-full h-auto border rounded" style="max-height: 200px;">`;
+            if(item.screenshots && item.screenshots.length > 0) {
+                item.screenshots.forEach(src => {
+                    attachmentsHTML += `<img src="${src}" alt="Screenshot" class="mt-2 max-w-full h-auto border rounded cursor-pointer" style="max-height: 200px;" onclick="openImageModal('${src}')">`;
+                });
             }
             attachmentsHTML += `</div>`;
         }
@@ -870,24 +919,35 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
             <div class="mt-auto pt-4">
                 <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
                     <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Triage Assessment</div>
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <label class="block text-xs text-gray-500 mb-1">Feasibility</label>
-                            <select onchange="updateItem(${item.id}, 'feasibility', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
-                                <option value="Unassessed" ${item.feasibility === 'Unassessed' ? 'selected' : ''}>Unassessed</option>
-                                <option value="High" ${item.feasibility === 'High' ? 'selected' : ''} class="text-green-600">High</option>
-                                <option value="Medium" ${item.feasibility === 'Medium' ? 'selected' : ''} class="text-yellow-600">Medium</option>
-                                <option value="Low" ${item.feasibility === 'Low' ? 'selected' : ''} class="text-red-600">Low</option>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">Status</label>
+                            <select onchange="updateItem(${item.id}, 'status', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
+                                <option value="Not Started" ${item.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
+                                <option value="Under Consideration" ${item.status === 'Under Consideration' ? 'selected' : ''} class="text-blue-600">Under Consideration</option>
+                                <option value="In Progress" ${item.status === 'In Progress' ? 'selected' : ''} class="text-yellow-600">In Progress</option>
+                                <option value="Done" ${item.status === 'Done' ? 'selected' : ''} class="text-green-600">Done</option>
                             </select>
                         </div>
-                        <div class="flex-1">
-                            <label class="block text-xs text-gray-500 mb-1">Effort</label>
-                            <select onchange="updateItem(${item.id}, 'effort', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
-                                <option value="Unassessed" ${item.effort === 'Unassessed' ? 'selected' : ''}>Unassessed</option>
-                                <option value="Easy" ${item.effort === 'Easy' ? 'selected' : ''} class="text-green-600">Easy</option>
-                                <option value="Medium" ${item.effort === 'Medium' ? 'selected' : ''} class="text-yellow-600">Medium</option>
-                                <option value="Hard" ${item.effort === 'Hard' ? 'selected' : ''} class="text-red-600">Hard</option>
-                            </select>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs text-gray-500 mb-1">Feasibility</label>
+                                <select onchange="updateItem(${item.id}, 'feasibility', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
+                                    <option value="Unassessed" ${item.feasibility === 'Unassessed' ? 'selected' : ''}>Unassessed</option>
+                                    <option value="High" ${item.feasibility === 'High' ? 'selected' : ''} class="text-green-600">High</option>
+                                    <option value="Medium" ${item.feasibility === 'Medium' ? 'selected' : ''} class="text-yellow-600">Medium</option>
+                                    <option value="Low" ${item.feasibility === 'Low' ? 'selected' : ''} class="text-red-600">Low</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs text-gray-500 mb-1">Effort</label>
+                                <select onchange="updateItem(${item.id}, 'effort', this.value)" ${disabledAttr} class="w-full text-xs font-medium border-gray-200 rounded shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white py-1 ${isAdmin ? '' : 'opacity-50 cursor-not-allowed'}">
+                                    <option value="Unassessed" ${item.effort === 'Unassessed' ? 'selected' : ''}>Unassessed</option>
+                                    <option value="Easy" ${item.effort === 'Easy' ? 'selected' : ''} class="text-green-600">Easy</option>
+                                    <option value="Medium" ${item.effort === 'Medium' ? 'selected' : ''} class="text-yellow-600">Medium</option>
+                                    <option value="Hard" ${item.effort === 'Hard' ? 'selected' : ''} class="text-red-600">Hard</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -923,7 +983,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
     async function updateItem(id, field, value) {
         const item = items.find(i => i.id === id);
         if (item) {
-            if (field === 'feasibility' || field === 'effort') {
+            if (field === 'status' || field === 'feasibility' || field === 'effort') {
                 if (currentUser !== 'admin') {
                     openModal('login-modal');
                     // Revert the select to original value
@@ -945,19 +1005,12 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
 
     async function updateIssueLabels(number, field, value) {
         try {
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/issues/${number}`, {
-                headers: { Authorization: `token ${githubToken}` }
-            });
-            const issue = await response.json();
-            const labels = issue.labels.map(l => l.name).filter(l => !['high', 'medium', 'low', 'easy', 'medium', 'hard'].includes(l));
-            labels.push(value.toLowerCase());
-            await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/issues/${number}`, {
+            await fetch(`/api/issues/${number}`, {
                 method: 'PATCH',
                 headers: {
-                    Authorization: `token ${githubToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ labels })
+                body: JSON.stringify({ field: field, value: value })
             });
         } catch (e) {
             console.error('Failed to update issue', e);
@@ -972,13 +1025,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         }
         if(confirm("Remove this item?")) {
             try {
-                await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/issues/${id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        Authorization: `token ${githubToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ state: 'closed' })
+                await fetch(`/api/issues/${id}`, {
+                    method: 'DELETE'
                 });
             } catch (e) {
                 console.error('Failed to close issue', e);
@@ -1016,21 +1064,28 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         }
 
         const createdAt = new Date().toISOString();
-        let screenshot = '';
-        if (window.selectedFile) {
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const user = currentUser || name || 'guest';
-            const filename = `${timestamp}_${user}_${window.selectedFile.name}`;
-            try {
-                screenshot = await uploadImage(window.selectedFile, filename);
-            } catch (e) {
-                console.error('Failed to upload image', e);
-                showToast('Failed to upload screenshot', 'error');
-                return;
+        let screenshots = [];
+        if (window.selectedFiles && window.selectedFiles.length > 0) {
+            for (let file of window.selectedFiles) {
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const user = currentUser || name || 'guest';
+                const filename = `${timestamp}_${user}_${file.name}`;
+                try {
+                    const url = await uploadImage(file, filename);
+                    screenshots.push(url);
+                } catch (e) {
+                    console.error('Failed to upload image', e);
+                    showToast('Failed to upload screenshot', 'error');
+                    return;
+                }
             }
         }
 
-        let body = (desc || 'No description provided.') + (url ? '\n\nURL: ' + url : '') + (screenshot ? '\n\nScreenshot: ' + screenshot : '');
+        let screenshotStr = '';
+        if (screenshots.length > 0) {
+            screenshotStr = '\n\nScreenshots: ' + screenshots.join('\n');
+        }
+        let body = (desc || 'No description provided.') + (url ? '\n\nURL: ' + url : '') + screenshotStr;
         body += '\n\nCreated At: ' + createdAt;
         if (!currentUser) {
             body += '\n\nName: ' + name + '\nEmail: ' + email;
@@ -1039,10 +1094,9 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         const labels = [type.toLowerCase()];
 
         try {
-            const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/issues`, {
+            const response = await fetch('/api/issues', {
                 method: 'POST',
                 headers: {
-                    Authorization: `token ${githubToken}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -1069,11 +1123,12 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                 type: type,
                 title: title,
                 description: desc || 'No description provided.',
+                status: 'Not Started',
                 feasibility: 'Unassessed',
                 effort: 'Unassessed',
                 createdAt: createdAt,
                 url: url,
-                screenshot: screenshot,
+                screenshots: screenshots,
                 selected: false,
                 createdBy: currentUser || name,
                 email: currentUser ? '' : email
@@ -1092,7 +1147,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         document.getElementById('new-desc').value = '';
         document.getElementById('new-url').value = '';
         document.getElementById('new-screenshot').value = '';
-        window.selectedFile = null;
+        window.selectedFiles = [];
         document.getElementById('new-name').value = '';
         document.getElementById('new-email').value = '';
     }
@@ -1105,6 +1160,9 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         document.querySelectorAll('.filter-type').forEach(cb => cb.checked = true);
         document.getElementById('filter-feasibility').value = 'All';
         document.getElementById('filter-effort').value = 'All';
+        document.querySelectorAll('.filter-status').forEach(cb => {
+            cb.checked = cb.value !== 'Done';
+        });
         renderItems();
     }
 
@@ -1200,17 +1258,7 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         setTimeout(() => {
             const md = createMarkdownString(item);
             currentMarkdown = md;
-            
-            // Simple MD to HTML parser for preview
-            let htmlPreview = md
-                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank">$1</a>')
-                .replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1">')
-                .replace(/\n/gim, '<br>');
-
-            display.innerHTML = htmlPreview;
+            display.innerText = md;
             loader.classList.add('hidden');
         }, 500);
     }
@@ -1221,41 +1269,33 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
         if(item.type === 'Feature') labels.push('enhancement');
         if(item.effort === 'Easy') labels.push('good first issue');
         if(item.feasibility === 'High') labels.push('priority: high');
-        
+
         const labelString = labels.join(', ');
 
         // Attachments Section for MD
         let attachmentSection = "";
-        if (item.url || item.screenshot) {
+        if (item.url || (item.screenshots && item.screenshots.length > 0)) {
             attachmentSection += "\n## Attachments\n";
             if(item.url) attachmentSection += `- **Reference:** [Link](${item.url})\n`;
-            if(item.screenshot) attachmentSection += `\n![Screenshot](${item.screenshot})\n`;
+            if(item.screenshots && item.screenshots.length > 0) {
+                item.screenshots.forEach(src => {
+                    attachmentSection += `\n![Screenshot](${src})\n`;
+                });
+            }
         }
 
-        return `---
-name: ${item.type} Report
-about: ${item.title}
-labels: ${labelString}
-assignees: ''
----
+        return `Create a GitHub issue in markdown format for the following item:
 
-# [${item.type.toUpperCase()}] ${item.title}
+Title: ${item.title}
+Type: ${item.type}
+Description: ${item.description}
+Status: ${item.status}
+Feasibility: ${item.feasibility}
+Effort Required: ${item.effort}
+Labels: ${labelString}
+${attachmentSection ? 'Attachments: ' + attachmentSection.trim() : ''}
 
-**Status:** Triage
-**Feasibility:** ${item.feasibility}
-**Effort Required:** ${item.effort}
-
-## Description
-${item.description}
-${attachmentSection}
-## AI Analysis
-*Generated by DevLoop AI Triage Assistant*
-- **Recommendation:** ${item.feasibility === 'High' ? 'Proceed with implementation.' : 'Needs further discussion.'}
-- **Estimated Complexity:** ${item.effort}
-
-## Acceptance Criteria
-- [ ] Requirements met
-- [ ] Tests passed`;
+Please format it as a complete GitHub issue template with sections like Description, Acceptance Criteria, etc. Make it ready to paste into GitHub.`;
     }
 
     function copyCurrentMarkdown() {
@@ -1264,9 +1304,29 @@ ${attachmentSection}
         });
     }
 
+    function openImageModal(src) {
+        document.getElementById('image-modal-img').src = src;
+        openModal('image-modal');
+    }
+
 </script>
 
-<!-- 
+<!-- Image Modal -->
+<div class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" id="image-modal">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[95vh] overflow-hidden transform transition-all flex flex-col scale-95 opacity-0" id="image-modal-content">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 flex-none">
+            <h3 class="text-lg font-semibold text-gray-900">Screenshot</h3>
+            <button class="text-gray-400 hover:text-gray-600 text-2xl" onclick="closeModal('image-modal')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-6 flex-1 overflow-auto flex items-start justify-center">
+            <img id="image-modal-img" src="" alt="Screenshot" class="max-w-full object-contain">
+        </div>
+    </div>
+</div>
+
+<!--
     Image Sources:
     "/gen?prompt=collaborative+software+team+planning+on+glass+board+modern+office+blue+tones&aspect=16:9"
 -->

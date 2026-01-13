@@ -541,8 +541,8 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
                             <span class="material-symbols-outlined text-[16px] text-gray-400">image</span>
                             Screenshot
                         </label>
-                        <input class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" id="new-screenshot" type="file" accept="image/*">
-                        <p class="text-xs text-gray-500 mt-1">Select an image file to include in the report.</p>
+                        <input class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" id="new-screenshot" type="file" accept="image/*" multiple>
+                        <p class="text-xs text-gray-500 mt-1">Select one or more image files to include in the report.</p>
                     </div>
                 </div>
             </div>
@@ -653,7 +653,7 @@ Please format it as a complete GitHub issue template with sections like Descript
                 effort: 'Easy',
                 created: '2023-10-24',
                 url: '',
-                screenshot: '',
+                screenshots: [],
                 selected: false,
                 createdBy: 'admin',
                 email: ''
@@ -668,7 +668,7 @@ Please format it as a complete GitHub issue template with sections like Descript
                 effort: 'Medium',
                 created: '2023-10-25',
                 url: 'https://oauth.net/2/',
-                screenshot: '',
+                screenshots: [],
                 selected: false,
                 createdBy: 'admin',
                 email: ''
@@ -690,7 +690,8 @@ Please format it as a complete GitHub issue template with sections like Descript
     function parseIssueToItem(issue) {
         const body = issue.body || '';
         const urlMatch = body.match(/URL:\s*(.+)/);
-        const screenshotMatch = body.match(/Screenshot:\s*(.+)/);
+        const screenshotMatch = body.match(/Screenshots:\s*([\s\S]*?)(?=\n\n|$)/);
+        const screenshots = screenshotMatch ? screenshotMatch[1].split('\n').map(s => s.trim()).filter(s => s) : [];
         const nameMatch = body.match(/Name:\s*(.+)/);
         const emailMatch = body.match(/Email:\s*(.+)/);
         const createdAtMatch = body.match(/Created At:\s*(.+)/);
@@ -709,7 +710,7 @@ Please format it as a complete GitHub issue template with sections like Descript
             title: issue.title,
             description: description,
             url: urlMatch ? urlMatch[1] : '',
-            screenshot: screenshotMatch ? screenshotMatch[1] : '',
+            screenshots: screenshots,
             feasibility: feasibility,
             effort: effort,
             status: status,
@@ -823,7 +824,7 @@ Please format it as a complete GitHub issue template with sections like Descript
     }
 
     function handleFileSelect(event) {
-        window.selectedFile = event.target.files[0] || null;
+        window.selectedFiles = Array.from(event.target.files) || [];
     }
 
     // --- Item Management ---
@@ -876,11 +877,13 @@ Please format it as a complete GitHub issue template with sections like Descript
 
         // Attachments indicators
         let attachmentsHTML = '';
-        if(item.url || item.screenshot) {
-            attachmentsHTML = `<div class="flex gap-2 mt-3 mb-1">`;
+        if(item.url || (item.screenshots && item.screenshots.length > 0)) {
+            attachmentsHTML = `<div class="flex gap-2 mt-3 mb-1 flex-wrap">`;
             if(item.url) attachmentsHTML += `<a href="${item.url}" target="_blank" class="flex items-center gap-1 text-xs text-indigo-600 hover:underline bg-indigo-50 px-2 py-1 rounded"><span class="material-symbols-outlined text-[14px]">link</span>Link</a>`;
-            if(item.screenshot) {
-                attachmentsHTML += `<img src="${item.screenshot}" alt="Screenshot" class="mt-2 max-w-full h-auto border rounded cursor-pointer" style="max-height: 200px;" onclick="openImageModal('${item.screenshot}')">`;
+            if(item.screenshots && item.screenshots.length > 0) {
+                item.screenshots.forEach(src => {
+                    attachmentsHTML += `<img src="${src}" alt="Screenshot" class="mt-2 max-w-full h-auto border rounded cursor-pointer" style="max-height: 200px;" onclick="openImageModal('${src}')">`;
+                });
             }
             attachmentsHTML += `</div>`;
         }
@@ -1061,21 +1064,28 @@ Please format it as a complete GitHub issue template with sections like Descript
         }
 
         const createdAt = new Date().toISOString();
-        let screenshot = '';
-        if (window.selectedFile) {
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const user = currentUser || name || 'guest';
-            const filename = `${timestamp}_${user}_${window.selectedFile.name}`;
-            try {
-                screenshot = await uploadImage(window.selectedFile, filename);
-            } catch (e) {
-                console.error('Failed to upload image', e);
-                showToast('Failed to upload screenshot', 'error');
-                return;
+        let screenshots = [];
+        if (window.selectedFiles && window.selectedFiles.length > 0) {
+            for (let file of window.selectedFiles) {
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const user = currentUser || name || 'guest';
+                const filename = `${timestamp}_${user}_${file.name}`;
+                try {
+                    const url = await uploadImage(file, filename);
+                    screenshots.push(url);
+                } catch (e) {
+                    console.error('Failed to upload image', e);
+                    showToast('Failed to upload screenshot', 'error');
+                    return;
+                }
             }
         }
 
-        let body = (desc || 'No description provided.') + (url ? '\n\nURL: ' + url : '') + (screenshot ? '\n\nScreenshot: ' + screenshot : '');
+        let screenshotStr = '';
+        if (screenshots.length > 0) {
+            screenshotStr = '\n\nScreenshots: ' + screenshots.join('\n');
+        }
+        let body = (desc || 'No description provided.') + (url ? '\n\nURL: ' + url : '') + screenshotStr;
         body += '\n\nCreated At: ' + createdAt;
         if (!currentUser) {
             body += '\n\nName: ' + name + '\nEmail: ' + email;
@@ -1118,7 +1128,7 @@ Please format it as a complete GitHub issue template with sections like Descript
                 effort: 'Unassessed',
                 createdAt: createdAt,
                 url: url,
-                screenshot: screenshot,
+                screenshots: screenshots,
                 selected: false,
                 createdBy: currentUser || name,
                 email: currentUser ? '' : email
@@ -1137,7 +1147,7 @@ Please format it as a complete GitHub issue template with sections like Descript
         document.getElementById('new-desc').value = '';
         document.getElementById('new-url').value = '';
         document.getElementById('new-screenshot').value = '';
-        window.selectedFile = null;
+        window.selectedFiles = [];
         document.getElementById('new-name').value = '';
         document.getElementById('new-email').value = '';
     }
@@ -1264,10 +1274,14 @@ Please format it as a complete GitHub issue template with sections like Descript
 
         // Attachments Section for MD
         let attachmentSection = "";
-        if (item.url || item.screenshot) {
+        if (item.url || (item.screenshots && item.screenshots.length > 0)) {
             attachmentSection += "\n## Attachments\n";
             if(item.url) attachmentSection += `- **Reference:** [Link](${item.url})\n`;
-            if(item.screenshot) attachmentSection += `\n![Screenshot](${item.screenshot})\n`;
+            if(item.screenshots && item.screenshots.length > 0) {
+                item.screenshots.forEach(src => {
+                    attachmentSection += `\n![Screenshot](${src})\n`;
+                });
+            }
         }
 
         return `Create a GitHub issue in markdown format for the following item:
