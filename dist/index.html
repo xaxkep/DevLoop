@@ -702,7 +702,7 @@ Please format it as a complete GitHub issue template with sections like Descript
         const effortLabel = issue.labels.find(l => ['easy', 'medium', 'hard'].includes(l.name));
         const effort = effortLabel ? effortLabel.name.charAt(0).toUpperCase() + effortLabel.name.slice(1) : 'Unassessed';
         const statusLabel = issue.labels.find(l => l.name.startsWith('status:'));
-        const status = statusLabel ? statusLabel.name.split(':')[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Not Started';
+        const status = statusLabel ? statusLabel.name.split(':')[1].trim().split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : 'Not Started';
         const description = body.split('\n\n')[0];
         return {
             id: issue.number,
