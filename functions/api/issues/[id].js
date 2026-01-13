@@ -24,6 +24,27 @@ export async function onRequest(context) {
             filterLabels = ['high', 'medium', 'low'];
         } else if (field === 'effort') {
             filterLabels = ['easy', 'medium', 'hard'];
+        } else if (field === 'status') {
+            // Filter out old status labels
+            labels = labels.filter(l => !l.startsWith('status:'));
+            // Add new status label
+            const statusValue = value.toLowerCase().replace(' ', '-');
+            labels.push(`status: ${statusValue}`);
+            // Skip the common logic below
+            const response = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${env.GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'DevLoop-App'
+                },
+                body: JSON.stringify({ labels })
+            });
+            const updatedIssue = await response.json();
+            return new Response(JSON.stringify(updatedIssue), {
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
         const labels = issue.labels.map(l => l.name).filter(l => !filterLabels.includes(l));
         if (value !== 'Unassessed') {
