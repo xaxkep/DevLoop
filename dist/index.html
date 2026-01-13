@@ -731,9 +731,16 @@ Please format it as a complete GitHub issue template with sections like Descript
     // --- Auth ---
     let currentUser = null;
 
-    function checkAuth() {
-        const user = sessionStorage.getItem('loggedInUser');
-        currentUser = user || null;
+    async function checkAuth() {
+        try {
+            const response = await fetch('/api/user');
+            const data = await response.json();
+            currentUser = data.email || null;
+        } catch (e) {
+            // Fallback to session storage for old login
+            const user = sessionStorage.getItem('loggedInUser');
+            currentUser = user || null;
+        }
         updateAuthUI();
         loadItems().then(() => {
             renderItems();
@@ -1052,17 +1059,6 @@ Please format it as a complete GitHub issue template with sections like Descript
             return;
         }
 
-        if (!currentUser) {
-            if (!name) {
-                alert('Please enter your name');
-                return;
-            }
-            if (!email) {
-                alert('Please enter your email');
-                return;
-            }
-        }
-
         const createdAt = new Date().toISOString();
         let screenshots = [];
         if (window.selectedFiles && window.selectedFiles.length > 0) {
@@ -1087,9 +1083,6 @@ Please format it as a complete GitHub issue template with sections like Descript
         }
         let body = (desc || 'No description provided.') + (url ? '\n\nURL: ' + url : '') + screenshotStr;
         body += '\n\nCreated At: ' + createdAt;
-        if (!currentUser) {
-            body += '\n\nName: ' + name + '\nEmail: ' + email;
-        }
 
         const labels = [type.toLowerCase()];
 
@@ -1130,8 +1123,8 @@ Please format it as a complete GitHub issue template with sections like Descript
                 url: url,
                 screenshots: screenshots,
                 selected: false,
-                createdBy: currentUser || name,
-                email: currentUser ? '' : email
+                createdBy: currentUser,
+                email: ''
             };
             items.unshift(newItem);
             showToast('Failed to sync to GitHub, saved locally', 'warning');
@@ -1148,8 +1141,6 @@ Please format it as a complete GitHub issue template with sections like Descript
         document.getElementById('new-url').value = '';
         document.getElementById('new-screenshot').value = '';
         window.selectedFiles = [];
-        document.getElementById('new-name').value = '';
-        document.getElementById('new-email').value = '';
     }
 
     // --- UI Helpers ---
@@ -1194,11 +1185,8 @@ Please format it as a complete GitHub issue template with sections like Descript
         }, 10);
         if (id === 'add-modal') {
             const guestFields = document.getElementById('guest-fields');
-            if (currentUser) {
-                guestFields.classList.add('hidden');
-            } else {
-                guestFields.classList.remove('hidden');
-            }
+            // Since users are authenticated via Cloudflare Access, hide guest fields
+            guestFields.classList.add('hidden');
         }
     }
 
