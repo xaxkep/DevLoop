@@ -999,7 +999,7 @@ Please format it as a complete GitHub issue template with sections like Descript
                 }
             }
             item[field] = value;
-            if (field === 'feasibility' || field === 'effort') {
+            if (field === 'status' || field === 'feasibility' || field === 'effort') {
                 try {
                     await updateIssueLabels(id, field, value);
                 } catch (e) {
