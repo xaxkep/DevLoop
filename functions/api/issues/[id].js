@@ -46,7 +46,7 @@ export async function onRequest(context) {
                 headers: { 'Content-Type': 'application/json' }
             });
         }
-        const labels = issue.labels.map(l => l.name).filter(l => !filterLabels.includes(l));
+        let labels = issue.labels.map(l => l.name).filter(l => !filterLabels.includes(l));
         if (value !== 'Unassessed') {
             labels.push(value.toLowerCase());
         }
