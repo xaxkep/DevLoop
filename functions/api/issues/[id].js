@@ -7,6 +7,7 @@ export async function onRequest(context) {
         // Update issue labels
         const body = await request.json();
         const { field, value } = body;
+        console.log('PATCH request for issue', id, 'field:', field, 'value:', value);
 
         // First, get current issue
         const getResponse = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues/${id}`, {
@@ -17,40 +18,32 @@ export async function onRequest(context) {
             }
         });
         const issue = await getResponse.json();
+        console.log('Current issue labels:', issue.labels ? issue.labels.map(l => l.name) : 'none');
 
-        // Filter out old labels of the same type and add new
-        let filterLabels = [];
-        if (field === 'feasibility') {
-            filterLabels = ['high', 'medium', 'low'];
-        } else if (field === 'effort') {
-            filterLabels = ['easy', 'medium', 'hard'];
-        } else if (field === 'status') {
+        // Get current labels and update based on field
+        let labels = issue.labels.map(l => l.name);
+
+        if (field === 'status') {
+            console.log('Updating status field');
             // Filter out old status labels
             labels = labels.filter(l => !l.startsWith('status:'));
             // Add new status label
-            const statusValue = value.toLowerCase().replace(' ', '-');
-            labels.push(`status: ${statusValue}`);
-            // Skip the common logic below
-            const response = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `token ${env.GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'DevLoop-App'
-                },
-                body: JSON.stringify({ labels })
-            });
-            const updatedIssue = await response.json();
-            return new Response(JSON.stringify(updatedIssue), {
-                headers: { 'Content-Type': 'application/json' }
-            });
-        }
-        let labels = issue.labels.map(l => l.name).filter(l => !filterLabels.includes(l));
-        if (value !== 'Unassessed') {
-            labels.push(value.toLowerCase());
+            const statusValue = value.toLowerCase().replace(/ /g, '-');
+            labels.push(`status:${statusValue}`);
+            console.log('New labels for status update:', labels);
+        } else if (field === 'feasibility') {
+            labels = labels.filter(l => !['high', 'medium', 'low'].includes(l));
+            if (value !== 'Unassessed') {
+                labels.push(value.toLowerCase());
+            }
+        } else if (field === 'effort') {
+            labels = labels.filter(l => !['easy', 'medium', 'hard'].includes(l));
+            if (value !== 'Unassessed') {
+                labels.push(value.toLowerCase());
+            }
         }
 
+        console.log('Updated labels for field:', field, labels);
         // Update issue
         const response = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues/${id}`, {
             method: 'PATCH',
@@ -62,7 +55,12 @@ export async function onRequest(context) {
             },
             body: JSON.stringify({ labels })
         });
+        if (!response.ok) {
+            console.error('GitHub API error:', response.status, await response.text());
+            return new Response('GitHub API error', { status: response.status });
+        }
         const updatedIssue = await response.json();
+        console.log('PATCH response labels:', updatedIssue.labels ? updatedIssue.labels.map(l => l.name) : 'none');
         return new Response(JSON.stringify(updatedIssue), {
             headers: { 'Content-Type': 'application/json' }
         });
