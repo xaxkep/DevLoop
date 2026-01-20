@@ -557,6 +557,62 @@ wb);O(IMG_SEARCH_ATTRIBUTION_MAP,Pd);O(IMG_GEN_REPLACE_MAP,fa.A);X();jf();h.A=0}
 
 
 
+<!-- Edit Item Modal -->
+<div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" id="edit-modal">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all flex flex-col max-h-[90vh] scale-95 opacity-0" id="edit-modal-content">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 flex-none">
+            <h3 class="text-lg font-semibold text-gray-900">Edit Item</h3>
+            <button class="text-gray-400 hover:text-gray-600" onclick="closeModal('edit-modal')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-4 overflow-y-auto flex-1">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <input class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow" id="edit-title" placeholder="e.g., Fix login crash on Safari" type="text">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-shadow resize-none" id="edit-desc" placeholder="Describe the issue or idea in detail..." rows="3"></textarea>
+            </div>
+
+            <!-- Attachments Section -->
+            <div class="border-t border-gray-100 pt-4">
+                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Attachments &amp; Links</h4>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px] text-gray-400">link</span>
+                            Reference URL
+                        </label>
+                        <input class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" id="edit-url" placeholder="https://..." type="url">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px] text-gray-400">image</span>
+                            Screenshot
+                        </label>
+                        <input class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" id="edit-screenshot" type="file" accept="image/*" multiple>
+                        <p class="text-xs text-gray-500 mt-1">Select one or more image files to include in the report.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Existing Screenshots -->
+            <div id="edit-existing-screenshots" class="space-y-2"></div>
+        </div>
+
+        <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3 flex-none">
+            <button class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-200 rounded-lg transition-colors" onclick="closeModal('edit-modal')">Cancel</button>
+            <button class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm" onclick="saveEditedItem()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
 <!-- Export Modal -->
 <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" id="export-modal">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden transform transition-all scale-95 opacity-0" id="export-modal-content">
@@ -640,6 +696,7 @@ Please format it as a complete GitHub issue template with sections like Descript
 <script>
     // --- State ---
     let items = [];
+    let sessionItems = JSON.parse(localStorage.getItem('sessionItems') || '[]');
 
     function defaultItems() {
         return [
@@ -685,6 +742,14 @@ Please format it as a complete GitHub issue template with sections like Descript
             console.error('Failed to load from GitHub', e);
             items = JSON.parse(localStorage.getItem('items')) || defaultItems();
         }
+        // Mark session items
+        console.log('Marking session items, sessionItems:', sessionItems);
+        items.forEach(item => {
+            if (sessionItems.includes(item.id)) {
+                item.isSessionItem = true;
+                console.log('Marked item', item.id, 'as session item');
+            }
+        });
     }
 
     function parseIssueToItem(issue) {
@@ -717,7 +782,8 @@ Please format it as a complete GitHub issue template with sections like Descript
             selected: false,
             createdAt: createdAtMatch ? createdAtMatch[1] : issue.created_at,
             createdBy: nameMatch ? nameMatch[1] : issue.user.login,
-            email: emailMatch ? emailMatch[1] : ''
+            email: emailMatch ? emailMatch[1] : '',
+            isSessionItem: false
         };
     }
 
@@ -799,6 +865,7 @@ Please format it as a complete GitHub issue template with sections like Descript
     document.addEventListener('DOMContentLoaded', async () => {
         checkAuth();
         document.getElementById('new-screenshot').addEventListener('change', handleFileSelect);
+        document.getElementById('edit-screenshot').addEventListener('change', handleFileSelect);
     });
 
 
@@ -882,6 +949,8 @@ Please format it as a complete GitHub issue template with sections like Descript
         else if (item.type === 'Feature') { badgeClass = 'bg-blue-50 text-blue-700 border-blue-100'; iconName = 'extension'; }
         else { badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-100'; iconName = 'lightbulb'; }
 
+        const sessionBadge = item.isSessionItem ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 ml-2">Session</span>' : '';
+
         // Attachments indicators
         let attachmentsHTML = '';
         if(item.url || (item.screenshots && item.screenshots.length > 0)) {
@@ -910,8 +979,11 @@ Please format it as a complete GitHub issue template with sections like Descript
                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${badgeClass}">
                         <span class="material-symbols-outlined text-[14px]">${iconName}</span>
                         ${item.type}
-                    </span>
+                    </span>${sessionBadge}
                 </div>
+                ${item.isSessionItem ? `<button onclick="editItem(${item.id})" class="text-gray-300 hover:text-blue-500 transition-colors mr-2">
+                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>` : ''}
                 ${isAdmin ? `<button onclick="deleteItem(${item.id})" class="text-gray-300 hover:text-red-500 transition-colors">
                     <span class="material-symbols-outlined text-[20px]">delete</span>
                 </button>` : ''}
@@ -1107,6 +1179,9 @@ Please format it as a complete GitHub issue template with sections like Descript
                 newItem.createdBy = currentUser;
                 newItem.email = '';
             }
+            newItem.isSessionItem = true;
+            sessionItems.push(newItem.id);
+            localStorage.setItem('sessionItems', JSON.stringify(sessionItems));
             items.unshift(newItem);
         } catch (e) {
             console.error('Failed to create issue', e);
@@ -1124,8 +1199,11 @@ Please format it as a complete GitHub issue template with sections like Descript
                 screenshots: screenshots,
                 selected: false,
                 createdBy: currentUser,
-                email: ''
+                email: '',
+                isSessionItem: true
             };
+            sessionItems.push(newItem.id);
+            localStorage.setItem('sessionItems', JSON.stringify(sessionItems));
             items.unshift(newItem);
             showToast('Failed to sync to GitHub, saved locally', 'warning');
         }
@@ -1141,6 +1219,170 @@ Please format it as a complete GitHub issue template with sections like Descript
         document.getElementById('new-url').value = '';
         document.getElementById('new-screenshot').value = '';
         window.selectedFiles = [];
+    }
+
+    // --- Edit Item Management ---
+
+    let currentlyEditingId = null;
+
+    async function editItem(id) {
+        console.log('editItem called with id:', id);
+        const item = items.find(i => i.id === id);
+        console.log('item found:', item ? { id: item.id, isSessionItem: item.isSessionItem } : 'null');
+        if (!item || !item.isSessionItem) {
+            console.log('Cannot edit: not a session item or not found');
+            return;
+        }
+
+        currentlyEditingId = id;
+
+        // Populate the edit modal
+        document.getElementById('edit-title').value = item.title;
+        document.getElementById('edit-desc').value = item.description;
+        document.getElementById('edit-url').value = item.url || '';
+
+        // Handle existing screenshots
+        const existingScreenshots = document.getElementById('edit-existing-screenshots');
+        existingScreenshots.innerHTML = '';
+
+        if (item.screenshots && item.screenshots.length > 0) {
+            existingScreenshots.innerHTML = '<h5 class="text-sm font-medium text-gray-700 mb-2">Current Screenshots:</h5>';
+            item.screenshots.forEach((src, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-2 p-2 bg-gray-50 rounded';
+                div.innerHTML = `
+                    <img src="${src}" alt="Screenshot ${index + 1}" class="w-16 h-12 object-cover rounded">
+                    <span class="text-sm text-gray-600 flex-1">Screenshot ${index + 1}</span>
+                    <button onclick="removeExistingScreenshot(${index})" class="text-red-500 hover:text-red-700">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                `;
+                existingScreenshots.appendChild(div);
+            });
+        }
+
+        // Reset file input
+        document.getElementById('edit-screenshot').value = '';
+        window.selectedFiles = [];
+
+        openModal('edit-modal');
+    }
+
+    async function saveEditedItem() {
+        console.log('saveEditedItem called, currentlyEditingId:', currentlyEditingId);
+        const title = document.getElementById('edit-title').value;
+        const desc = document.getElementById('edit-desc').value;
+        const url = document.getElementById('edit-url').value;
+
+        if (!title) {
+            console.log('Validation failed: title is empty');
+            alert('Please enter a title');
+            return;
+        }
+
+        const item = items.find(i => i.id === currentlyEditingId);
+        if (!item) return;
+
+        // Handle new screenshots
+        let newScreenshots = [];
+        if (window.selectedFiles && window.selectedFiles.length > 0) {
+            for (let file of window.selectedFiles) {
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const user = currentUser || 'guest';
+                const filename = `${timestamp}_${user}_${file.name}`;
+                try {
+                    const url = await uploadImage(file, filename);
+                    newScreenshots.push(url);
+                } catch (e) {
+                    console.error('Failed to upload image', e);
+                    showToast('Failed to upload screenshot', 'error');
+                    return;
+                }
+            }
+        }
+
+        // Combine existing and new screenshots
+        let allScreenshots = [...(item.screenshots || [])];
+        if (newScreenshots.length > 0) {
+            allScreenshots = [...allScreenshots, ...newScreenshots];
+        }
+
+        // Prepare updated data
+        const updatedData = {
+            title: title,
+            description: desc,
+            url: url,
+            screenshots: allScreenshots
+        };
+        console.log('Prepared updatedData:', updatedData);
+
+        try {
+            // Create new issue and close old one
+            console.log('Sending PUT request to /api/issues/' + currentlyEditingId);
+            const response = await fetch(`/api/issues/${currentlyEditingId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (!response.ok) {
+                console.error('PUT request failed:', response.status, await response.text());
+                throw new Error('Failed to update issue');
+            }
+
+            const newIssue = await response.json();
+            console.log('PUT response successful, new issue:', newIssue.number);
+            const newItem = parseIssueToItem(newIssue);
+
+            // Update local state
+            console.log('Updating local state: replacing item', currentlyEditingId, 'with', newItem.id);
+            const index = items.findIndex(i => i.id === currentlyEditingId);
+            if (index !== -1) {
+                items[index] = newItem;
+                items[index].isSessionItem = true; // Maintain session flag
+                console.log('Item updated in array at index', index);
+            } else {
+                console.warn('Item not found in array for update');
+            }
+
+            // Update sessionItems to replace old id with new id
+            console.log('Updating sessionItems: replacing', currentlyEditingId, 'with', newItem.id);
+            sessionItems = sessionItems.map(id => id === currentlyEditingId ? newItem.id : id);
+            localStorage.setItem('sessionItems', JSON.stringify(sessionItems));
+            console.log('sessionItems updated:', sessionItems);
+
+            showToast('Item updated successfully');
+        } catch (e) {
+            console.error('Failed to update issue', e);
+            // Fallback: Update local state only
+            const index = items.findIndex(i => i.id === currentlyEditingId);
+            if (index !== -1) {
+                items[index] = { ...items[index], ...updatedData };
+            }
+            showToast('Updated locally (GitHub sync failed)', 'warning');
+        }
+
+        localStorage.setItem('items', JSON.stringify(items));
+        renderItems();
+        updateStats();
+        closeModal('edit-modal');
+        currentlyEditingId = null;
+    }
+
+    function removeExistingScreenshot(index) {
+        console.log('removeExistingScreenshot called with index:', index);
+        const item = items.find(i => i.id === currentlyEditingId);
+        if (item && item.screenshots) {
+            console.log('Before removal, screenshots:', item.screenshots);
+            item.screenshots.splice(index, 1);
+            console.log('After removal, screenshots:', item.screenshots);
+            // Re-render the edit modal
+            editItem(currentlyEditingId);
+        } else {
+            console.warn('Item not found or no screenshots to remove');
+        }
     }
 
     // --- UI Helpers ---

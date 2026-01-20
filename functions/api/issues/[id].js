@@ -3,7 +3,93 @@ export async function onRequest(context) {
     const method = request.method;
     const id = params.id;
 
-    if (method === 'PATCH') {
+    if (method === 'PUT') {
+        // Full item update: create new issue and close old one
+        const body = await request.json();
+        const { title, description, url, screenshots } = body;
+        console.log('PUT request for issue', id, 'with updated data');
+
+        // Get the current issue to preserve other data
+        const getResponse = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues/${id}`, {
+            headers: {
+                'Authorization': `token ${env.GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'User-Agent': 'DevLoop-App'
+            }
+        });
+
+        if (!getResponse.ok) {
+            console.error('Failed to get current issue:', getResponse.status);
+            return new Response('Failed to get current issue', { status: getResponse.status });
+        }
+
+        const currentIssue = await getResponse.json();
+        const currentBody = currentIssue.body || '';
+
+        // Extract existing data from body
+        const nameMatch = currentBody.match(/Name:\s*(.+)/);
+        const emailMatch = currentBody.match(/Email:\s*(.+)/);
+        const createdAtMatch = currentBody.match(/Created At:\s*(.+)/);
+
+        // Build new body
+        let newBody = description || 'No description provided.';
+        if (url) newBody += '\n\nURL: ' + url;
+        if (screenshots && screenshots.length > 0) {
+            newBody += '\n\nScreenshots: ' + screenshots.join('\n');
+        }
+        newBody += '\n\nCreated At: ' + (createdAtMatch ? createdAtMatch[1] : new Date().toISOString());
+        if (nameMatch) newBody += '\n\nName: ' + nameMatch[1];
+        if (emailMatch) newBody += '\n\nEmail: ' + emailMatch[1];
+
+        // Create new issue
+        const createResponse = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${env.GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'DevLoop-App'
+            },
+            body: JSON.stringify({
+                title: title,
+                body: newBody,
+                labels: currentIssue.labels.map(l => l.name) // Preserve existing labels
+            })
+        });
+
+        if (!createResponse.ok) {
+            console.error('Failed to create new issue:', createResponse.status, await createResponse.text());
+            return new Response('Failed to create new issue', { status: createResponse.status });
+        }
+
+        const newIssue = await createResponse.json();
+        console.log('Created new issue:', newIssue.number);
+
+        // Close the old issue
+        const closeResponse = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `token ${env.GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'DevLoop-App'
+            },
+            body: JSON.stringify({
+                state: 'closed',
+                body: currentIssue.body + '\n\n---\n*This issue was updated and replaced by #' + newIssue.number + '*'
+            })
+        });
+
+        if (!closeResponse.ok) {
+            console.error('Failed to close old issue:', closeResponse.status);
+            // Continue anyway, as the new issue was created successfully
+        }
+
+        return new Response(JSON.stringify(newIssue), {
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+    } else if (method === 'PATCH') {
         // Update issue labels
         const body = await request.json();
         const { field, value } = body;
