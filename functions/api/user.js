@@ -1,0 +1,12 @@
+export async function onRequest(context) {
+  const { request } = context;
+  const method = request.method;
+
+  if (method === 'GET') {
+    // Return current user email from Cloudflare Access header
+    const userEmail = request.headers.get('Cf-Access-Authenticated-User-Email') || 'dev-mode@localhost';
+    return Response.json({ email: userEmail });
+  } else {
+    return new Response('Method not allowed', { status: 405 });
+  }
+}
