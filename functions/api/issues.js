@@ -36,7 +36,7 @@ export async function onRequest(context) {
         const requestBody = await request.json();
         // Append user email to the issue body
         let issueBody = requestBody.body;
-        issueBody += `\n\n---\n*Reported by: ${userEmail}*`;
+        issueBody += `\n\nEmail: ${userEmail}`;
         const body = { ...requestBody, body: issueBody };
         try {
             const response = await fetch('https://api.github.com/repos/xaxkep/DevLoop/issues', {

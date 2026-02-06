@@ -781,7 +781,7 @@ Please format it as a complete GitHub issue template with sections like Descript
             status: status,
             selected: false,
             createdAt: createdAtMatch ? createdAtMatch[1] : issue.created_at,
-            createdBy: nameMatch ? nameMatch[1] : issue.user.login,
+            createdBy: nameMatch ? nameMatch[1] : (emailMatch ? emailMatch[1] : issue.user.login),
             email: emailMatch ? emailMatch[1] : '',
             isSessionItem: false
         };
@@ -802,10 +802,19 @@ Please format it as a complete GitHub issue template with sections like Descript
             const response = await fetch('/api/user');
             const data = await response.json();
             currentUser = data.email || null;
+            if (currentUser) {
+                document.cookie = `user_email=${currentUser}; path=/; max-age=${60*60*24*7}`; // 1 week
+            }
         } catch (e) {
-            // Fallback to session storage for old login
-            const user = sessionStorage.getItem('loggedInUser');
-            currentUser = user || null;
+            // Check cookie
+            const match = document.cookie.match(new RegExp('(^| )user_email=([^;]+)'));
+            if (match) {
+                currentUser = match[2];
+            } else {
+                // Fallback to session storage for old login
+                const user = sessionStorage.getItem('loggedInUser');
+                currentUser = user || null;
+            }
         }
         updateAuthUI();
         loadItems().then(() => {
