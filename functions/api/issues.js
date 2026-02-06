@@ -11,21 +11,41 @@ export async function onRequest(context) {
     }
 
     if (method === 'GET') {
-        // Get all issues
+        // Get all issues with pagination
+        let allIssues = [];
+        let page = 1;
+        const perPage = 100;
+
         try {
-            const response = await fetch('https://api.github.com/repos/xaxkep/DevLoop/issues', {
-                headers: {
-                    'Authorization': `token ${env.GITHUB_TOKEN}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'User-Agent': 'DevLoop-App'
+            while (true) {
+                const response = await fetch(`https://api.github.com/repos/xaxkep/DevLoop/issues?per_page=${perPage}&page=${page}`, {
+                    headers: {
+                        'Authorization': `token ${env.GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'User-Agent': 'DevLoop-App'
+                    }
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    return new Response('GitHub API error: ' + response.status + ' ' + text, { status: 500 });
                 }
-            });
-            if (!response.ok) {
-                const text = await response.text();
-                return new Response('GitHub API error: ' + response.status + ' ' + text, { status: 500 });
+
+                const issues = await response.json();
+                if (issues.length === 0) {
+                    break;
+                }
+
+                allIssues = allIssues.concat(issues);
+
+                if (issues.length < perPage) {
+                    break;
+                }
+
+                page++;
             }
-            const issues = await response.json();
-            return new Response(JSON.stringify(issues), {
+
+            return new Response(JSON.stringify(allIssues), {
                 headers: { 'Content-Type': 'application/json' }
             });
         } catch (e) {
