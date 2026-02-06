@@ -797,6 +797,10 @@ Please format it as a complete GitHub issue template with sections like Descript
     // --- Auth ---
     let currentUser = null;
 
+    function isAdminUser() {
+        return (currentUser === 'admin') || (sessionStorage.getItem('loggedInUser') === 'admin');
+    }
+
     async function checkAuth() {
         try {
             const response = await fetch('/api/user');
@@ -973,7 +977,7 @@ Please format it as a complete GitHub issue template with sections like Descript
             attachmentsHTML += `</div>`;
         }
 
-        const isAdmin = currentUser && currentUser === 'admin';
+        const isAdmin = isAdminUser();
         const disabledAttr = isAdmin ? '' : 'disabled';
 
         card.innerHTML = `
@@ -1072,7 +1076,7 @@ Please format it as a complete GitHub issue template with sections like Descript
         const item = items.find(i => i.id === id);
         if (item) {
             if (field === 'status' || field === 'feasibility' || field === 'effort') {
-                if (currentUser !== 'admin') {
+                if (!isAdminUser()) {
                     openModal('login-modal');
                     // Revert the select to original value
                     renderItems();
@@ -1106,7 +1110,7 @@ Please format it as a complete GitHub issue template with sections like Descript
     }
 
     async function deleteItem(id) {
-        if (!currentUser || currentUser !== 'admin') {
+        if (!isAdminUser()) {
             alert('You must be logged in as admin to delete items.');
             openModal('login-modal');
             return;
